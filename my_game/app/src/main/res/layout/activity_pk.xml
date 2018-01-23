@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary">
+
+   <EditText
+       android:id="@+id/et_test"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:textSize="30dp"
+       android:textColor="@color/colorWhite"/>
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal">
+
+
+      <Button
+          android:id="@+id/button_start"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="开始游戏"
+          android:textColor="@color/colorWhite"
+          android:layout_weight="1"/>
+
+      <Button
+          android:id="@+id/button_add"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="加入游戏"
+          android:textColor="@color/colorWhite"
+          android:layout_weight="1"/>
+
+
+   </LinearLayout>
+
+   <LinearLayout
+       android:layout_marginTop="50dp"
+       android:layout_width="match_parent"
+       android:layout_height="30dp"
+       android:orientation="horizontal">
+      <TextView
+          android:id="@+id/tv_a"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:background="@color/crimson"
+          android:layout_weight="1"/>
+      <TextView
+          android:id="@+id/tv_b"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:background="@color/gold"
+          android:layout_weight="1"/>
+
+   </LinearLayout>
+
+
+
+
+</LinearLayout>
