@@ -2,23 +2,19 @@ package com.test.li182.my_game;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,9 +39,11 @@ public class ServerActivity extends AppCompatActivity {
     private final int MSG_TRANSFORM = 102;
     private final int MSG_END = 103;
     private final int MSG_TEST = 104;
-    private Button button;
+    private Button func_button;
+    private Button getip_button;
 
     private boolean receving;
+    private int buttonState = 1;  //1:创建房间  2.等待玩家进入 3.开始 4.传输中
 
     private final int PORT = 8899;
     Socket socket;
@@ -58,6 +56,7 @@ public class ServerActivity extends AppCompatActivity {
     public RecyclerView.Adapter mAdapter;
     public RecyclerView.LayoutManager mLayoutManager;
 
+
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler(){
         @Override
@@ -67,7 +66,7 @@ public class ServerActivity extends AppCompatActivity {
             switch (msg.what){
                 case MSG_ADD:
                     String[] playerMsg = info.substring(1).split(":");
-                    players.add(new Player(playerMsg[0],playerMsg[1]));
+                    players.add(new Player(playerMsg[0],Integer.parseInt(playerMsg[1]),playerMsg[2]));
                     mAdapter.notifyDataSetChanged();
                     break;
                 case MSG_PREPARE:
@@ -80,6 +79,21 @@ public class ServerActivity extends AppCompatActivity {
                         }
                     }
                     mAdapter.notifyDataSetChanged();
+
+                    boolean isReady = true;
+                    iterator = players.iterator();
+                    while (iterator.hasNext()){
+                        Player p = iterator.next();
+                        if (!p.isReady()){
+                            isReady = false;
+                            break;
+                        }
+                    }
+                    if (isReady){
+                        buttonState = 3;
+                        func_button.setBackgroundResource(R.drawable.start);
+                        func_button.setClickable(true);
+                    }
                     break;
                 case MSG_TRANSFORM:
                     String[] str = info.substring(1).split(":");
@@ -114,9 +128,11 @@ public class ServerActivity extends AppCompatActivity {
                         returnMessage();
                         receving = false;
                         closeSocket();
-                        button.setText("创建房间");
+                        buttonState = 1;
+                        func_button.setBackgroundResource(R.drawable.creat_room);
+                        func_button.setClickable(true);
                         clientAddress.clear();
-                        players.clear();
+
                     }
                     break;
                 case MSG_TEST:
@@ -129,9 +145,13 @@ public class ServerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);//隐藏标题栏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);//隐藏状态栏
         setContentView(R.layout.activity_server);
 
-        button = findViewById(R.id.button_server);
+        func_button = findViewById(R.id.button_server);
+        getip_button = findViewById(R.id.button_getip);
+
 
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         List<Player> list = new ArrayList<>();
@@ -140,24 +160,37 @@ public class ServerActivity extends AppCompatActivity {
 
         initView();
 
-        button.setOnClickListener(new View.OnClickListener() {
+        func_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (button.getText().toString().equals("创建房间")){
+                if (buttonState == 1){
                     initView();
-                    button.setText("开始");
+                    buttonState = 2;
+                    func_button.setBackgroundResource(R.drawable.waiting);
+                    func_button.setClickable(false);
                     startReceving();
                 }
-                else if (button.getText().toString().equals("开始"));{
+                else if (buttonState == 3){
+                    buttonState = 4;
+                    func_button.setBackgroundResource(R.drawable.sending);
+                    func_button.setClickable(false);
                     for(String addr : clientAddress){
                         sendmessage(addr,"start");
                     }
                 }
             }
         });
+        getip_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String ip = getIP();
+                toast(ServerActivity.this,ip);
+            }
+        });
     }
 
     private void initView() {
+        players.clear();
         mAdapter = new MyAdapter(players);
         mRecyclerView = findViewById(R.id.rc_server);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -281,28 +314,6 @@ public class ServerActivity extends AppCompatActivity {
 
 
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_server,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-
-            case R.id.menu_server1:
-                String ip = getIP();
-                toast(ServerActivity.this,ip);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     @NonNull
     private String getIP() {
         //获取wifi服务

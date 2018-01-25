@@ -3,33 +3,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.test.li182.my_game.SelectActivity"
-    android:background="@color/colorPrimary"
-    android:orientation="vertical">
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context="com.test.li182.my_game.SelectActivity">
 
-    <Button
-        android:id="@+id/button_pk"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:layout_gravity="center"
-        android:text="PK模式" />
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/gifbg"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg">
 
-    <Button
-        android:id="@+id/button_server"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        android:text="多人模式：服务器" />
+        </pl.droidsonroids.gif.GifImageView>
 
-    <Button
-        android:id="@+id/button_client"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        android:text="多人模式：玩家" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
+            <Button
+                android:id="@+id/button_pk"
+                android:layout_width="380px"
+                android:layout_height="180px"
+                android:layout_gravity="center"
+                android:layout_marginTop="150dp"
+                android:background="@drawable/playbt" />
+
+            <Button
+                android:id="@+id/button_union"
+                android:layout_width="654px"
+                android:layout_height="144px"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/multiplayer" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 </LinearLayout>

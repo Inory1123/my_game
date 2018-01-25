@@ -21,8 +21,22 @@ import java.util.Queue;
 
 public class Utils {
 
+    public static void addToQue(Queue<Integer> que, int data, int capacity) {
+        if(que.size()<capacity){
+            que.add(data);
+        }else {
+            que.poll();
+            que.add(data);
+        }
+    }
 
-
+    public static Integer queMean(Queue<Integer> que) {
+        float mean = 0f;
+        for (Iterator it = que.iterator();it.hasNext();){
+            mean = mean+(Integer)it.next();
+        }
+        return (int)mean/que.size();
+    }
 
     public static void toast(Context context,String str){
         Toast.makeText(context,str,Toast.LENGTH_SHORT).show();
